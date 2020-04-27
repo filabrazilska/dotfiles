@@ -10,3 +10,4 @@ xhost si:localuser:root
 setxkbmap -layout \"us,cz\" -option grp:lctrl_lshift_toggle
 dunst &>/dev/null &
 picom -CGb
+redshift &>/dev/null &
