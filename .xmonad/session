@@ -4,7 +4,7 @@ parcellite &>/dev/null &
 nm-applet &>/dev/null &
 xscreensaver &>/dev/null &
 [[ -f /home/fila/.xmodmap ]] && /usr/bin/xmodmap /home/fila/.xmodmap > /home/fila/.xmodmap.log 2>&1
-# xsetroot -solid black
+fbsetroot -mod 5 5 -fg rgb:00/10/00 -bg rgb:00/00/00
 # corebird &>/dev/null &
 xhost si:localuser:root
 setxkbmap -layout \"us,cz\" -option grp:lctrl_lshift_toggle
