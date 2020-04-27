@@ -145,7 +145,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Launch rofi
   -- Use this to launch programs without a key binding.
   , ((modMask, xK_p),
-     spawn "rofi -show run")
+     spawn "rofi -show combi -combi-modi 'run,drun'")
 
   -- Launch passmenu
   , ((modMask, xK_o),
