@@ -1,0 +1,3 @@
+#!/bin/bash
+
+XSECURELOCK_DIM_COLOR=black XSECURELOCK_DIM_TIME_MS=5000 XSECURELOCK_SAVER=~/workspace/dotfiles/tools/saver_xscreensaver xsecurelock

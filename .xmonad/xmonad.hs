@@ -138,9 +138,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   [ ((modMask .|. shiftMask, xK_Return),
      spawn $ XMonad.terminal conf)
 
-  -- Lock the screen using xscreensaver.
+  -- Lock the screen using xsecurelock.
   , ((modMask .|. controlMask, xK_l),
-     spawn "xscreensaver-command -lock")
+     spawn "xset s activate")
 
   -- Launch rofi
   -- Use this to launch programs without a key binding.
