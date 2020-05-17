@@ -13,6 +13,6 @@ CHARGING=$(/usr/bin/upower -i $BAT | grep -q 'state:\s*charging' && echo 1 || ec
 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
 
 
-if [[ "$CHARGING" -eq "0" && (($POW < $LIMIT)) ]]; then
+if [[ "$CHARGING" -eq "0" ]] && (($POW < $LIMIT)); then
     /usr/bin/notify-send -u critical -t 15000 "Low battery: $POW%"
 fi
