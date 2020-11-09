@@ -9,4 +9,5 @@ setxkbmap -layout \"us,cz\" -option grp:lctrl_lshift_toggle
 dunst &>/dev/null &
 picom -CGb
 redshift &>/dev/null &
+dropbox start &>/dev/null
 xss-lock -n /usr/libexec/xsecurelock/dimmer -l -- ~/bin/lock_screen &>/dev/null &
