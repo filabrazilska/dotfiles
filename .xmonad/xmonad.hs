@@ -5,6 +5,7 @@
 import System.IO
 import System.Exit
 import XMonad
+import XMonad.Actions.UpdatePointer
 import XMonad.Hooks.UrgencyHook
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
@@ -32,6 +33,9 @@ import qualified Data.Map        as M
 --
 myTerminal = "/usr/bin/urxvt256c"
 
+------------------------------------------------------------------------
+-- move the cursor in the middle of a newly focused window
+up = updatePointer (0.5, 0.5) (0, 0)
 
 ------------------------------------------------------------------------
 -- Workspaces
@@ -209,39 +213,39 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
   -- Move focus to the next window.
   , ((modMask, xK_Tab),
-     windows W.focusDown)
+     windows W.focusDown           >> up)
 
   -- Move focus to the next window.
   , ((modMask, xK_j),
-     windows W.focusDown)
+     windows W.focusDown           >> up)
 
   -- Move focus to the previous window.
   , ((modMask, xK_k),
-     windows W.focusUp  )
+     windows W.focusUp             >> up)
 
   -- Move focus to the master window.
   , ((modMask, xK_m),
-     windows W.focusMaster  )
+     windows W.focusMaster         >> up)
 
   -- Swap the focused window and the master window.
   , ((modMask, xK_Return),
-     windows W.swapMaster)
+     windows W.swapMaster          >> up)
 
   -- Swap the focused window with the next window.
   , ((modMask .|. shiftMask, xK_j),
-     windows W.swapDown  )
+     windows W.swapDown            >> up)
 
   -- Swap the focused window with the previous window.
   , ((modMask .|. shiftMask, xK_k),
-     windows W.swapUp    )
+     windows W.swapUp              >> up)
 
   -- Shrink the master area.
   , ((modMask, xK_h),
-     sendMessage Shrink)
+     sendMessage Shrink            >> up)
 
   -- Expand the master area.
   , ((modMask, xK_l),
-     sendMessage Expand)
+     sendMessage Expand            >> up)
 
   -- Push window back into tiling.
   , ((modMask, xK_t),
@@ -249,11 +253,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
   -- Increment the number of windows in the master area.
   , ((modMask, xK_comma),
-     sendMessage (IncMasterN 1))
+     sendMessage (IncMasterN 1)    >> up)
 
   -- Decrement the number of windows in the master area.
   , ((modMask, xK_period),
-     sendMessage (IncMasterN (-1)))
+     sendMessage (IncMasterN (-1)) >> up)
 
   -- Toggle the status bar gap.
   -- TODO: update this binding with avoidStruts, ((modMask, xK_b),
