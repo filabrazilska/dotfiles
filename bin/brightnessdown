@@ -1,0 +1,16 @@
+#!/bin/bash
+# For acpid create copy this file into /etc/acpi/actions and
+# create another file /etc/acpi/events/brigtnessdown with the following:
+# event=video/brightnessdown BRTDN 00000087 00000000
+# action=/etc/acpi/actions/brightnessdown
+
+STEP=100
+max=$(cat /sys/class/backlight/intel_backlight/max_brightness)
+curr=$(cat /sys/class/backlight/intel_backlight/brightness)
+new=$((curr - STEP))
+
+if (( "$new" < "0" )); then
+    new=0
+fi
+
+echo $new > /sys/class/backlight/intel_backlight/brightness
