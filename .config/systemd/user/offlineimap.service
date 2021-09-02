@@ -1,0 +1,13 @@
+[Unit]
+Description=Start offlineimap periodically every 5 minutes
+#Requires=network.target
+#After=network.target
+
+[Service]
+ExecStart=/usr/bin/offlineimap -o
+KillSignal=SIGUSR2
+Restart=always
+RestartSec=300
+
+[Install]
+WantedBy=default.target
