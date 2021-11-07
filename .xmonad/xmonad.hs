@@ -1,25 +1,25 @@
 -- xmonad config used by Vic Fryzel
 -- Author: Vic Fryzel
 -- http://github.com/vicfryzel/xmonad-config
+-- customized per the xmonad tutorial to support xmonad-0.17
+-- https://xmonad.org/TUTORIAL.html
 
 import System.IO
 import System.Exit
 import XMonad
 import XMonad.Actions.UpdatePointer
-import XMonad.Hooks.UrgencyHook
-import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.SetWMName
+import XMonad.Hooks.StatusBar
+import XMonad.Hooks.StatusBar.PP
+import XMonad.Hooks.WindowSwallowing
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
-import XMonad.Layout.Spiral
-import XMonad.Layout.Tabbed
+import XMonad.Layout.Magnifier
+import XMonad.Layout.Renamed
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.IndependentScreens
-import XMonad.Util.Run(spawnPipe)
-import XMonad.Util.EZConfig(additionalKeys, additionalKeysP)
 import Graphics.X11.ExtraTypes.XF86
 import Graphics.X11.Xinerama
 import qualified XMonad.StackSet as W
@@ -88,40 +88,23 @@ myManageHook = composeAll
 -- which denotes layout choice.
 --
 myLayout = avoidStruts (
-    Tall 1 (3/100) (1/2) |||
-    Mirror (Tall 1 (3/100) (1/2)) |||
-    -- tabbed shrinkText tabConfig |||
-    Full |||
-    spiral (6/7)) |||
+    Tall nmaster delta ratio |||
+    Mirror (Tall nmaster delta ratio) |||
+    renamed [Replace "ThreeCol"] (magnifiercz' 1.4 $ ThreeColMid nmaster delta ratio )) |||
     noBorders (fullscreenFull Full)
+    where
+        nmaster = 1       -- Default number of windows in the master pane
+        ratio    = 1/2    -- Default proportion of screen occupied by master pane
+        delta    = 3/100  -- Percent of screen to increment by when resizing panes
 
 
 ------------------------------------------------------------------------
--- Colors and borders
--- Currently based on the ir_black theme.
---
-myNormalBorderColor  = "#eee8d5"
-myFocusedBorderColor = "#dc322f"
-
--- Colors for text and backgrounds of each tab when in "Tabbed" layout.
--- tabConfig = defaultTheme {
---     activeBorderColor = "#7C7C7C",
---     activeTextColor = "#CEFFAC",
---     activeColor = "#000000",
---     inactiveBorderColor = "#7C7C7C",
---     inactiveTextColor = "#EEEEEE",
---     inactiveColor = "#000000"
--- }
 
 -- Color of current window title in xmobar.
 xmobarTitleColor = "#939496"
 
 -- Color of current workspace in xmobar.
 xmobarCurrentWorkspaceColor = "#859900"
-
--- Width of the window border in pixels.
-myBorderWidth = 1
-
 
 ------------------------------------------------------------------------
 -- Key bindings
@@ -164,7 +147,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Take full screenshot in multi-head mode.
   -- That is, take a screenshot of everything you see.
   , ((modMask .|. controlMask .|. shiftMask, xK_p),
-     spawn "screenshot")
+     spawn "scrot")
 
   -- Fetch a single use password.
   , ((modMask .|. shiftMask, xK_o),
@@ -259,9 +242,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_period),
      sendMessage (IncMasterN (-1)) >> up)
 
-  -- Toggle the status bar gap.
-  -- TODO: update this binding with avoidStruts, ((modMask, xK_b),
-
   -- Quit xmonad.
   , ((modMask .|. shiftMask, xK_q),
      io (exitWith ExitSuccess))
@@ -311,17 +291,6 @@ myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
 
 
 ------------------------------------------------------------------------
--- Status bars and logging
--- Perform an arbitrary action on each internal state change or X event.
--- See the 'DynamicLog' extension for examples.
---
--- To emulate dwm's status bar
---
--- > logHook = dynamicLogDzen
---
-
-
-------------------------------------------------------------------------
 -- Startup hook
 -- Perform an arbitrary action each time xmonad starts or is restarted
 -- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
@@ -334,18 +303,11 @@ myStartupHook =  return ()
 -- Run xmonad with all the defaults we set up.
 --
 main = do
-  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
-  xmonad $ docks $ ewmh $ defaults {
-      logHook = dynamicLogWithPP $ xmobarPP {
-            ppOutput = hPutStrLn xmproc
-          , ppTitle = xmobarColor xmobarTitleColor "" . shorten 100
-          , ppCurrent = xmobarColor xmobarCurrentWorkspaceColor ""
-          , ppSep = "   "
-      }
-      , manageHook = manageDocks <+> myManageHook
--- *--      , startupHook = setWMName "LG3D"
-  }
-
+  xmonad
+    $ docks
+    $ ewmhFullscreen
+    $ withEasySB (statusBarProp "xmobar" (pure def)) defToggleStrutsKey
+    $ defaults
 
 ------------------------------------------------------------------------
 -- Combine it all together
@@ -358,19 +320,18 @@ main = do
 defaults = def {
     -- simple stuff
     terminal           = myTerminal,
-    -- *--focusFollowsMouse  = myFocusFollowsMouse,
-    borderWidth        = myBorderWidth,
+    borderWidth        = 1,
     modMask            = myModMask,
     workspaces         = myWorkspaces,
-    normalBorderColor  = myNormalBorderColor,
-    focusedBorderColor = myFocusedBorderColor,
+    normalBorderColor  = "#eee8d5",
+    focusedBorderColor = "#dc322f",
 
     -- key bindings
     keys               = myKeys,
     mouseBindings      = myMouseBindings,
 
     -- hooks, layouts
-    handleEventHook    = handleEventHook def <+> XMonad.Hooks.EwmhDesktops.fullscreenEventHook,
+    handleEventHook    = handleEventHook def <+> swallowEventHook (className =? "Alacritty" <||> className =? "Termite") (return True),
     layoutHook         = smartBorders $ myLayout,
     manageHook         = myManageHook,
     startupHook        = myStartupHook

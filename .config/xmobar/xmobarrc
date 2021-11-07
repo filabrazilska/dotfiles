@@ -13,9 +13,9 @@ Config {
         Run Memory ["-t","Mem: <usedratio>%","-H","8192","-L","4096","-h","#DC322F","-l","#859900","-n","#268BD2"] 10,
         Run BatteryP ["BAT0"] ["-t", "Batt: <timeleft>"] 10,
         Run Date "%a %b %_d %l:%M" "date" 10,
-        Run StdinReader
+        Run XMonadLog
     ],
     sepChar = "%",
     alignSep = "}{",
-    template = "%StdinReader% }{ %multicpu%   %memory%   %battery%   <fc=#939496>%date%</fc> "
+    template = "%XMonadLog% }{ %multicpu%   %memory%   %battery%   <fc=#939496>%date%</fc> "
 }

@@ -1,13 +1,15 @@
 #!/bin/bash
+picom -CGb
 stalonetray &>/dev/null &
+feh --bg-fill --no-fehbg ~/.wallpapers/haskell_background.png
 parcellite &>/dev/null &
 nm-applet &>/dev/null &
 [[ -f /home/fila/.xmodmap ]] && /usr/bin/xmodmap /home/fila/.xmodmap > /home/fila/.xmodmap.log 2>&1
-fbsetroot -mod 5 5 -fg rgb:00/10/00 -bg rgb:00/00/00
 xhost si:localuser:root
 setxkbmap -layout \"us,cz\" -option grp:lctrl_lshift_toggle
 dunst &>/dev/null &
-picom -CGb
+/usr/libexec/geoclue-2.0/demos/agent &>/dev/null & # has to run for redshift to start
+sleep 1
 redshift &>/dev/null &
-dropbox start &>/dev/null
+dropbox start &>/dev/null &
 xss-lock -n /usr/libexec/xsecurelock/dimmer -l -- ~/bin/lock_screen &>/dev/null &
