@@ -8,6 +8,7 @@ import System.IO
 import System.Exit
 import XMonad
 import XMonad.Actions.UpdatePointer
+import XMonad.Hooks.FadeWindows
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
@@ -98,6 +99,9 @@ myLayout = avoidStruts (
         delta    = 3/100  -- Percent of screen to increment by when resizing panes
 
 
+myFadeHook = composeAll [ opaque
+                        , isUnfocused --> transparency 0.2
+                        ]
 ------------------------------------------------------------------------
 
 -- Color of current window title in xmobar.
@@ -320,7 +324,7 @@ main = do
 defaults = def {
     -- simple stuff
     terminal           = myTerminal,
-    borderWidth        = 1,
+    borderWidth        = 0,
     modMask            = myModMask,
     workspaces         = myWorkspaces,
     normalBorderColor  = "#eee8d5",
@@ -331,7 +335,8 @@ defaults = def {
     mouseBindings      = myMouseBindings,
 
     -- hooks, layouts
-    handleEventHook    = handleEventHook def <+> swallowEventHook (className =? "Alacritty" <||> className =? "Termite") (return True),
+    handleEventHook    = handleEventHook def <+> fadeWindowsEventHook <+> swallowEventHook (className =? "Alacritty" <||> className =? "Termite") (return True),
+    logHook            = fadeWindowsLogHook myFadeHook,
     layoutHook         = smartBorders $ myLayout,
     manageHook         = myManageHook,
     startupHook        = myStartupHook
