@@ -310,8 +310,17 @@ main = do
   xmonad
     $ docks
     $ ewmhFullscreen
-    $ withEasySB (statusBarProp "xmobar" (pure def)) defToggleStrutsKey
+    $ withEasySB (statusBarProp "xmobar" (pure myXMobarPP)) defToggleStrutsKey
     $ defaults
+
+
+myXMobarPP :: PP
+myXMobarPP = def {
+    ppTitle = xmobarColor xmobarTitleColor "" . shorten 100,
+    ppCurrent = xmobarBorder "Bottom" xmobarCurrentWorkspaceColor 2
+              . xmobarColor xmobarCurrentWorkspaceColor "",
+    ppSep = " | "
+}
 
 ------------------------------------------------------------------------
 -- Combine it all together
