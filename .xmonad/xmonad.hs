@@ -108,7 +108,7 @@ myFadeHook = composeAll [ opaque
 xmobarTitleColor = "#939496"
 
 -- Color of current workspace in xmobar.
-xmobarCurrentWorkspaceColor = "#859900"
+xmobarCurrentWorkspaceColor = "#dc322f"
 
 ------------------------------------------------------------------------
 -- Key bindings
