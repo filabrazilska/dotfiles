@@ -309,6 +309,7 @@ myStartupHook =  return ()
 main = do
   xmonad
     $ docks
+    $ ewmh
     $ ewmhFullscreen
     $ withEasySB (statusBarProp "xmobar" (pure myXMobarPP)) defToggleStrutsKey
     $ defaults
