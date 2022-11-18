@@ -1,0 +1,5 @@
+clear lock
+keycode 66 = Control_R
+keycode 225 = XF86AudioPrev
+keycode 128 = XF86AudioPlay
+keycode 152 = XF86AudioNext
