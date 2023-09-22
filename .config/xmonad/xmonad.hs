@@ -12,6 +12,7 @@ import XMonad.Hooks.FadeWindows
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.Rescreen
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.WindowSwallowing
@@ -25,6 +26,8 @@ import Graphics.X11.ExtraTypes.XF86
 import Graphics.X11.Xinerama
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
+import qualified XMonad.DBus as D
+import qualified DBus.Client as DC
 
 
 ------------------------------------------------------------------------
@@ -32,7 +35,7 @@ import qualified Data.Map        as M
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal = "/usr/bin/alacritty"
+myTerminal = "/usr/bin/flatpak run org.wezfurlong.wezterm"
 
 ------------------------------------------------------------------------
 -- move the cursor in the middle of a newly focused window
@@ -70,11 +73,12 @@ myManageHook = composeAll
     , resource  =? "skype"          --> doFloat
     , className =? "evince"         --> doShift "4:docs"
     , className =? "Evince"         --> doShift "4:docs"
-    , className =? "Spotify - Linux Preview" --> doShift "8"
+    , className =? "Spotify"        --> doShift "7"
     , className =? "Birdie"         --> doShift "8"
     , className =? "VirtualBox"     --> doFloat
     , className =? "Xchat"          --> doShift "5:media"
     , className =? "stalonetray"    --> doIgnore
+    , className =? "obsidian"       --> doShift "0_8"
     , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
 
 
@@ -100,15 +104,8 @@ myLayout = avoidStruts (
 
 
 myFadeHook = composeAll [ opaque
-                        , isUnfocused --> transparency 0.2
+                        , isUnfocused --> transparency 0.05
                         ]
-------------------------------------------------------------------------
-
--- Color of current window title in xmobar.
-xmobarTitleColor = "#939496"
-
--- Color of current workspace in xmobar.
-xmobarCurrentWorkspaceColor = "#dc322f"
 
 ------------------------------------------------------------------------
 -- Key bindings
@@ -171,12 +168,15 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
 -- Decrease brightness.
   , ((0, 0x1008FF03),
-     spawn "xbacklight -10")
+     spawn "brightnessctl s 10%-")
 
 -- Increase brightness.
   , ((0, 0x1008FF02),
-     spawn "xbacklight +10")
+     spawn "brightnessctl s +10%")
 
+-- Toggle notifications.
+  , ((controlMask, xK_F12),
+     spawn "bin/toggle_notifications")
 
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
@@ -300,28 +300,40 @@ myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
 -- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
 -- per-workspace layout choices.
 --
--- By default, do nothing.
-myStartupHook =  return ()
+myStartupHook =  do
+    spawn "~/.config/xmonad/session"
+
+------------------------------------------------------------------------
+-- Rescreen hook
+-- Reconfigure screens when an output is (dis)connected.
+--
+-- myRandrChangeHook = do
+--     spawn "echo ---------- >> ~/xrandr.output"
+-- 
+-- myRescreenCfg = def{
+--     randrChangeHook = myRandrChangeHook
+-- }
 
 ------------------------------------------------------------------------
 -- Run xmonad with all the defaults we set up.
 --
 main = do
+  dbus <- D.connect
+  D.requestAccess dbus
   xmonad
     $ docks
     $ ewmh
     $ ewmhFullscreen
-    $ withEasySB (statusBarProp "xmobar" (pure myXMobarPP)) defToggleStrutsKey
+    $ withEasySB (statusBarProp "polybar" (pure (myPolybarPP dbus))) defToggleStrutsKey
+--    $ rescreenHook myRescreenCfg
     $ defaults
 
 
-myXMobarPP :: PP
-myXMobarPP = def {
-    ppTitle = xmobarColor xmobarTitleColor "" . shorten 100,
-    ppCurrent = xmobarBorder "Bottom" xmobarCurrentWorkspaceColor 2
-              . xmobarColor xmobarCurrentWorkspaceColor "",
-    ppSep = " | "
-}
+myPolybarPP :: DC.Client -> PP
+myPolybarPP dbus = def
+    { ppOutput = D.send dbus
+    , ppTitle = shorten 40
+    }
 
 ------------------------------------------------------------------------
 -- Combine it all together
@@ -345,7 +357,7 @@ defaults = def {
     mouseBindings      = myMouseBindings,
 
     -- hooks, layouts
-    handleEventHook    = handleEventHook def <+> fadeWindowsEventHook <+> swallowEventHook (className =? "Alacritty" <||> className =? "Termite") (return True),
+    handleEventHook    = handleEventHook def <+> fadeWindowsEventHook <+> swallowEventHook (className =? "Alacritty") (return True),
     logHook            = fadeWindowsLogHook myFadeHook,
     layoutHook         = smartBorders $ myLayout,
     manageHook         = myManageHook,

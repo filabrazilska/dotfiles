@@ -1,0 +1,28 @@
+#!/bin/bash
+picom --backend glx --glx-no-stencil -f -D 3 --vsync -b --use-damage --inactive-dim 0.1
+feh --bg-fill --no-fehbg ~/.wallpapers/cellularlandscape.jpg
+parcellite &>/dev/null &
+nm-applet &>/dev/null &
+blueman-applet &>/dev/null &
+[[ -f /home/fila/.xmodmap ]] && /usr/bin/xmodmap /home/fila/.xmodmap > /home/fila/.xmodmap.log 2>&1
+xhost si:localuser:root
+setxkbmap -layout \"us,cz\" -option grp:lctrl_lshift_toggle
+dunst &>/dev/null &
+
+if (($(ps Ufila | grep pasystray | grep -v grep | wc -l) == 0)); then
+	pasystray &>/dev/null &
+fi
+if (($(ps Ufila | grep mpris-proxy | grep -v grep | wc -l) == 0)); then
+	mpris-proxy &>/dev/null &
+fi
+
+GEOCLUE_AGENT=/usr/libexec/geoclue-2.0/demos/agent
+if (($(ps Ufila | grep $GEOCLUE_AGENT | grep -v grep | wc -l) == 0)); then
+    exec $GEOCLUE_AGENT &>/dev/null & # has to run for redshift to start
+    sleep 1
+fi
+if (($(ps Ufila | grep redshift | grep -v grep | wc -l) == 0)); then
+    exec redshift &>/dev/null &
+fi
+
+xss-lock -n /usr/libexec/xsecurelock/dimmer -l -- ~/bin/lock_screen &>/dev/null &

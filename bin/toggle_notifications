@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -xeo pipefail
+
+if [[ "$(/usr/bin/dunstctl is-paused)" = "false" ]]; then
+    notify-send -t 1000 "Pausing notifications."
+    sleep 1
+else
+    notify-send -t 1000 "Resuming notifications."
+fi
+
+/usr/bin/dunstctl set-paused toggle
