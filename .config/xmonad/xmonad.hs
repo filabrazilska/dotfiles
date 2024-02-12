@@ -22,6 +22,8 @@ import XMonad.Layout.Magnifier
 import XMonad.Layout.Renamed
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.IndependentScreens
+import XMonad.Util.NamedScratchpad
+import XMonad.Util.WorkspaceCompare
 import Graphics.X11.ExtraTypes.XF86
 import Graphics.X11.Xinerama
 import qualified XMonad.StackSet as W
@@ -48,6 +50,15 @@ up = updatePointer (0.5, 0.5) (0, 0)
 myWorkspaces = withScreens 2 (["1:term","2:web","3:code","4:docs","5:media"] ++ map show [6..9])
 
 ------------------------------------------------------------------------
+-- Workspaces
+-- The default number of workspaces (virtual screens) and their names.
+--
+myScratchpads = [
+  NS "spotify" "flatpak run com.spotify.Client" (className =? "Spotify") (customFloating $ W.RationalRect (1/10) (1/10) (4/5) (4/5)),
+  NS "obsidian" "flatpak run md.obsidian.Obsidian" (className =? "obsidian") (customFloating $ W.RationalRect (1/10) (1/10) (4/5) (4/5))
+  ]
+
+-----------------------------------------------------------------------
 -- Window rules
 -- Execute arbitrary actions and WindowSet manipulations when managing
 -- a new window. You can use this to, for example, always float a
@@ -70,15 +81,9 @@ myManageHook = composeAll
     , className =? "Navigator"      --> doShift "2:web"
     , resource  =? "gpicview"       --> doFloat
     , className =? "MPlayer"        --> doFloat
-    , resource  =? "skype"          --> doFloat
     , className =? "evince"         --> doShift "4:docs"
     , className =? "Evince"         --> doShift "4:docs"
-    , className =? "Spotify"        --> doShift "7"
-    , className =? "Birdie"         --> doShift "8"
-    , className =? "VirtualBox"     --> doFloat
-    , className =? "Xchat"          --> doShift "5:media"
     , className =? "stalonetray"    --> doIgnore
-    , className =? "obsidian"       --> doShift "0_8"
     , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
 
 
@@ -138,6 +143,14 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Launch passmenu
   , ((modMask, xK_o),
      spawn "bin/rofi_pass")
+
+  -- Trigger Spotify scratchpad
+  , ((modMask, xK_s),
+     namedScratchpadAction myScratchpads "spotify")
+
+  -- Trigger Obsidian scratchpad
+  , ((modMask, xK_a),
+     namedScratchpadAction myScratchpads "obsidian")
 
   -- Take a screenshot in select mode.
   -- After pressing this key binding, click a window, or draw a rectangle with
@@ -322,7 +335,7 @@ main = do
   D.requestAccess dbus
   xmonad
     $ docks
-    $ ewmh
+    $ addEwmhWorkspaceSort (pure (filterOutWs [scratchpadWorkspaceTag])) . ewmh
     $ ewmhFullscreen
     $ withEasySB (statusBarProp "polybar" (pure (myPolybarPP dbus))) defToggleStrutsKey
 --    $ rescreenHook myRescreenCfg
@@ -357,9 +370,9 @@ defaults = def {
     mouseBindings      = myMouseBindings,
 
     -- hooks, layouts
-    handleEventHook    = handleEventHook def <+> fadeWindowsEventHook <+> swallowEventHook (className =? "Alacritty") (return True),
+    handleEventHook    = handleEventHook def <+> fadeWindowsEventHook,
     logHook            = fadeWindowsLogHook myFadeHook,
     layoutHook         = smartBorders $ myLayout,
-    manageHook         = myManageHook,
+    manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads,
     startupHook        = myStartupHook
 }
