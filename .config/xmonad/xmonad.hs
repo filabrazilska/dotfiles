@@ -21,7 +21,6 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Magnifier
 import XMonad.Layout.Renamed
 import XMonad.Layout.ThreeColumns
-import XMonad.Layout.IndependentScreens
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.WorkspaceCompare
 import Graphics.X11.ExtraTypes.XF86
@@ -47,7 +46,7 @@ up = updatePointer (0.5, 0.5) (0, 0)
 -- Workspaces
 -- The default number of workspaces (virtual screens) and their names.
 --
-myWorkspaces = withScreens 2 (["1:term","2:web","3:code","4:docs","5:media"] ++ map show [6..9])
+myWorkspaces = ["1:term","2:web","3:code","4:docs","5:media"] ++ map show [6..9]
 
 ------------------------------------------------------------------------
 -- Workspaces
@@ -73,17 +72,10 @@ myScratchpads = [
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [ className =? "Firefox"        --> doShift "0_2:web"
+    [ className =? "Firefox"        --> doShift "2:web"
     , resource  =? "desktop_window" --> doIgnore
-    , className =? "Galculator"     --> doFloat
-    , className =? "Steam"          --> doFloat
-    , className =? "Gimp"           --> doFloat
-    , className =? "Navigator"      --> doShift "2:web"
-    , resource  =? "gpicview"       --> doFloat
-    , className =? "MPlayer"        --> doFloat
     , className =? "evince"         --> doShift "4:docs"
     , className =? "Evince"         --> doShift "4:docs"
-    , className =? "stalonetray"    --> doIgnore
     , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
 
 
@@ -271,8 +263,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
   -- mod-[1..9], Switch to workspace N
   -- mod-shift-[1..9], Move client to workspace N
-  [((m .|. modMask, k), windows $ onCurrentScreen f i)
-      | (i, k) <- zip (workspaces' conf) [xK_1 .. xK_9]
+  [((m .|. modMask, k), windows $ f i)
+      | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
       , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
   ++
 
