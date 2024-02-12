@@ -1,0 +1,34 @@
+#!/usr/bin/sh
+
+set -eux -o pipefail
+
+XMONAD_DIR=$HOME/.xmonad
+XMONAD_BIN=$HOME/.local/bin/xmonad
+
+XMONAD_CUSTOM=$XMONAD_DIR/xmonad-$(uname -i)-linux
+# recompile if broken shared libs after an upgrade
+if [ -r $XMONAD_DIR/xmonad.hs -a -x $XMONAD_CUSTOM ]; then
+    if ldd $XMONAD_CUSTOM | grep -q "not found"; then
+        $XMONAD_BIN --recompile
+    fi
+fi
+
+if [ -r $XMONAD_DIR/session ]; then
+    sh $XMONAD_DIR/session
+fi
+
+if [ -x /usr/bin/gnome-keyring-daemon ]; then
+    eval $(gnome-keyring-daemon --start)
+    export GNOME_KEYRING_SOCKET
+    export GNOME_KEYRING_PID
+fi
+
+if [ -n "$*" ]; then
+    if [ -d $XMONAD_DIR -a "$(ls -t $XMONAD_DIR | head -1)" = "xmonad.hs" ]; then
+        $XMONAD_BIN --recompile
+    fi
+    $XMONAD_BIN &
+    $*
+else
+    $XMONAD_BIN
+fi

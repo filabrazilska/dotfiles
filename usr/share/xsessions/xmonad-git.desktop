@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=xmonad-git
+Comment=Tiling window manager
+Exec=/home/fila/.local/bin/xmonad-start
+Terminal=false
+Type=Application
+
+[Window Manager]
+SessionManaged=true
