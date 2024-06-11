@@ -36,7 +36,7 @@ import qualified DBus.Client as DC
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal = "/usr/bin/flatpak run org.wezfurlong.wezterm"
+myTerminal = "/usr/bin/wezterm"
 
 ------------------------------------------------------------------------
 -- move the cursor in the middle of a newly focused window
@@ -74,6 +74,7 @@ myScratchpads = [
 myManageHook = composeAll
     [ className =? "Firefox"        --> doShift "2:web"
     , resource  =? "desktop_window" --> doIgnore
+    , className =? "sioyek"         --> doShift "4:docs"
     , className =? "evince"         --> doShift "4:docs"
     , className =? "Evince"         --> doShift "4:docs"
     , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
