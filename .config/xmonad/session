@@ -1,6 +1,6 @@
 #!/bin/bash
-picom --backend glx --glx-no-stencil -f -D 3 --vsync -b --use-damage --inactive-dim 0.1
-feh --bg-scale --no-fehbg ~/.wallpapers/cellularlandscape_90.jpg
+#feh --bg-scale --no-fehbg ~/.wallpapers/cellularlandscape_90.jpg
+feh --bg-max --no-fehbg ~/.wallpapers/rabbit_lukas_6y.png
 parcellite &>/dev/null &
 nm-applet &>/dev/null &
 blueman-applet &>/dev/null &

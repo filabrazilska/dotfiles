@@ -1,0 +1,9 @@
+[Unit]
+Description=Start the picom compositor
+
+[Service]
+ExecStart=/usr/bin/picom --backend glx --glx-no-stencil -f -D 3 --vsync --log-level DEBUG --use-damage --inactive-dim 0.1
+Restart=always
+
+[Install]
+WantedBy=default.target
