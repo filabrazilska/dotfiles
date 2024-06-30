@@ -1,7 +1,7 @@
 #!/bin/bash
 #feh --bg-scale --no-fehbg ~/.wallpapers/cellularlandscape_90.jpg
 feh --bg-max --no-fehbg ~/.wallpapers/rabbit_lukas_6y.png
-parcellite &>/dev/null &
+clipit &>/dev/null &
 nm-applet &>/dev/null &
 blueman-applet &>/dev/null &
 [[ -f /home/fila/.xmodmap ]] && /usr/bin/xmodmap /home/fila/.xmodmap > /home/fila/.xmodmap.log 2>&1
