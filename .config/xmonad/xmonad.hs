@@ -8,6 +8,7 @@ import System.IO
 import System.Exit
 import XMonad
 import XMonad.Actions.UpdatePointer
+import XMonad.Actions.GridSelect
 import XMonad.Hooks.FadeWindows
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
@@ -183,6 +184,10 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 -- Toggle notifications.
   , ((controlMask, xK_F12),
      spawn "bin/toggle_notifications")
+
+-- Trigger the GridSelect to pick a window
+  , ((modMask, xK_g),
+     goToSelected def)
 
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
