@@ -58,6 +58,8 @@ myScratchpads = [
   NS "obsidian" "flatpak run md.obsidian.Obsidian" (className =? "obsidian") (customFloating $ W.RationalRect (1/10) (1/10) (4/5) (4/5))
   ]
 
+gsconfig1 = def { gs_cellheight = 80, gs_cellwidth = 250 }
+
 -----------------------------------------------------------------------
 -- Window rules
 -- Execute arbitrary actions and WindowSet manipulations when managing
@@ -187,7 +189,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
 -- Trigger the GridSelect to pick a window
   , ((modMask, xK_g),
-     goToSelected def)
+     goToSelected gsconfig1)
 
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
