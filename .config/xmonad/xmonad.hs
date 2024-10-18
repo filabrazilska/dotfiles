@@ -148,6 +148,10 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_a),
      namedScratchpadAction myScratchpads "obsidian")
 
+  -- Switch keyboard layout to the next one
+  , ((controlMask .|. modMask, xK_k),
+      spawn "xkb-switch -n")
+
   -- Take a screenshot in select mode.
   -- After pressing this key binding, click a window, or draw a rectangle with
   -- the mouse.

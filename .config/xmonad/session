@@ -6,7 +6,7 @@ nm-applet &>/dev/null &
 blueman-applet &>/dev/null &
 [[ -f /home/fila/.xmodmap ]] && /usr/bin/xmodmap /home/fila/.xmodmap > /home/fila/.xmodmap.log 2>&1
 xhost si:localuser:root
-setxkbmap -layout \"us,cz\" -option grp:lctrl_lshift_toggle
+setxkbmap -layout \"us,cz\"
 dunst &>/dev/null &
 
 if (($(ps Ufila | grep pasystray | grep -v grep | wc -l) == 0)); then
