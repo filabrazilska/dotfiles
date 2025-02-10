@@ -96,6 +96,7 @@ myManageHook = composeAll
 myLayout = avoidStruts (
     Tall nmaster delta ratio |||
     Mirror (Tall nmaster delta ratio) |||
+    ThreeCol 1 (3/100) (1/3) |||
     renamed [Replace "ThreeCol"] (magnifiercz' 1.4 $ ThreeColMid nmaster delta ratio )) |||
     noBorders (fullscreenFull Full)
     where
